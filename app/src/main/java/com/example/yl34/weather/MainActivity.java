@@ -19,7 +19,8 @@ import static com.example.yl34.weather.getAPI.*;
 public class MainActivity extends AppCompatActivity {
 
     private TextView mTextMessage;
-
+    public String sky;
+    public String
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -51,6 +52,19 @@ public class MainActivity extends AppCompatActivity {
         //    final ImageView sunny = findViewById(R.id.sunny);
         //    sunny.setVisibility(View.VISIBLE);
         //}
+
+        getAPI.placeIdTask asyncTask =new getAPI.placeIdTask(new getAPI.AsyncResponse() {
+            public void processFinish(String weather_city, String weather_description, String weather_temperature, String weather_humidity, String weather_pressure) {
+                cityField.setText(weather_city);
+                updatedField.setText(weather_updatedOn);
+                detailsField.setText(weather_description);
+                currentTemperatureField.setText(weather_temperature);
+                humidity_field.setText("Humidity: "+weather_humidity);
+                pressure_field.setText("Pressure: "+weather_pressure);
+                weatherIcon.setText(Html.fromHtml(weather_iconText));
+
+            }
+        });
         location.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
