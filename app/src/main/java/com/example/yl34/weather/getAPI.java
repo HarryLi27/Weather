@@ -15,11 +15,11 @@ import java.util.Locale;
 
 public class getAPI {
     private static final String OPEN_WEATHER_MAP_URL =
-            "http://api.openweathermap.org/data/2.5/weather?lat=%s&lon=%s&units=metric";
+            "api.openweathermap.org/data/2.5/weather?q=%s";
 
     private static final String OPEN_WEATHER_MAP_API = "8f3e2e163ae68b59cbeae76e4688d546";
     public interface AsyncResponse {
-        void processFinish(String output1, String output2, String output3, String output4, String output5);
+        void processFinish(String output1, String output2, String output3, String output4);
     }
     public static class placeIdTask extends AsyncTask<String, Void, JSONObject> {
 
@@ -34,7 +34,7 @@ public class getAPI {
 
             JSONObject jsonWeather = null;
             try {
-                jsonWeather = getWeatherJSON(params[0], params[1]);
+                jsonWeather = getWeatherJSON(params[0]);
             } catch (Exception e) {
                 Log.d("Error", "Cannot process JSON results", e);
             }
@@ -47,18 +47,15 @@ public class getAPI {
         protected void onPostExecute(JSONObject json) {
             try {
                 if(json != null){
-                    JSONObject details = json.getJSONArray("weather").getJSONObject(0);
+                    JSONObject weather = json.getJSONArray("weather").getJSONObject(0);
+                    String sky = weather.getString("main");
                     JSONObject main = json.getJSONObject("main");
-                    DateFormat df = DateFormat.getDateTimeInstance();
-
-
-                    String city = json.getString("name").toUpperCase(Locale.US) + ", " + json.getJSONObject("sys").getString("country");
-                    String description = details.getString("description").toUpperCase(Locale.US);
-                    String temperature = String.format("%.2f", main.getDouble("temp"))+ "°";
+                    //String description = details.getString("description").toUpperCase(Locale.US);
+                    String temperature = main.getString("temp");
                     String humidity = main.getString("humidity") + "%";
                     String pressure = main.getString("pressure") + " hPa";
 
-                    delegate.processFinish(city, description, temperature, humidity, pressure);
+                    delegate.processFinish(sky, temperature, humidity, pressure);
 
                 }
             } catch (Exception e) {
@@ -66,9 +63,9 @@ public class getAPI {
             }
         }
     }
-    public static JSONObject getWeatherJSON(String lat, String lon){
+    public static JSONObject getWeatherJSON(String q){
         try {
-            URL url = new URL(String.format(OPEN_WEATHER_MAP_URL, lat, lon));
+            URL url = new URL(String.format(OPEN_WEATHER_MAP_URL,q));
             HttpURLConnection connection =
                     (HttpURLConnection)url.openConnection();
 

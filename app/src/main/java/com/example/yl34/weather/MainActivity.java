@@ -20,7 +20,9 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView mTextMessage;
     public String sky;
-    public String
+    public String temperature;
+    public String humidity;
+    public String pressure;
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -54,23 +56,17 @@ public class MainActivity extends AppCompatActivity {
         //}
 
         getAPI.placeIdTask asyncTask =new getAPI.placeIdTask(new getAPI.AsyncResponse() {
-            public void processFinish(String weather_city, String weather_description, String weather_temperature, String weather_humidity, String weather_pressure) {
-                cityField.setText(weather_city);
-                updatedField.setText(weather_updatedOn);
-                detailsField.setText(weather_description);
-                currentTemperatureField.setText(weather_temperature);
-                humidity_field.setText("Humidity: "+weather_humidity);
-                pressure_field.setText("Pressure: "+weather_pressure);
-                weatherIcon.setText(Html.fromHtml(weather_iconText));
-
+            public void processFinish(String sky1, String temperature1, String pressure1, String humidity1) {
+                sky = sky1;
+                temperature = temperature1;
+                pressure = pressure1;
+                humidity = humidity1;
             }
         });
         location.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                Log.d(TAG, "get the current location");
-                JSONObject weather = getWeatherJSON("London");
-                getWeatherInfo(weather);
+                Log.d(TAG, sky);
                 if(sky == "Clear") {
                     final ImageView sunny = findViewById(R.id.sunny);
                     sunny.setVisibility(View.VISIBLE);
@@ -85,10 +81,10 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
         mTextMessage = (TextView) findViewById(R.id.message);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        asyncTask.execute("London"); //  asyncTask.execute("Latitude", "Longitude")
     }
 
 }
